@@ -1,0 +1,17 @@
+{
+  "name": "harbor-docker-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser tests for the Harbor Docker app workspace",
+  "license": "MIT",
+  "scripts": {
+    "test": "node tests/ui.cjs",
+    "screenshots": "node tests/ui.cjs --screenshots"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

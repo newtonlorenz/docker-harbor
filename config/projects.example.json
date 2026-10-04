@@ -1,0 +1,20 @@
+{
+  "photo-library": {
+    "name": "Photos",
+    "description": "Your photo library",
+    "icon": "camera",
+    "palette": "rose"
+  },
+  "budget": {
+    "name": "Budget",
+    "icon": "chart",
+    "palette": "mint"
+  },
+  "secure-portal": {
+    "name": "Secure portal",
+    "description": "Sign in through the normal browser",
+    "icon": "shield",
+    "palette": "blue",
+    "externalUrl": "https://portal.example.com/"
+  }
+}

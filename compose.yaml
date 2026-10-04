@@ -1,0 +1,50 @@
+name: ${COMPOSE_PROJECT_NAME:-harbor}
+services:
+  inspector:
+    build: .
+    image: harbor-workspace:local
+    command: [python, inspector.py]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 5s
+    volumes:
+      - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock:ro
+    networks: [inspection]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+  harbor:
+    build: .
+    image: harbor-workspace:local
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 5s
+    depends_on: [inspector]
+    environment:
+      HARBOR_HOST: ${HARBOR_HOST:?Set HARBOR_HOST in .env}
+      HARBOR_PROJECT_NAME: ${COMPOSE_PROJECT_NAME:-harbor}
+      HARBOR_ATTACH_NETWORKS: ${HARBOR_ATTACH_NETWORKS:-}
+      INSPECTOR_URL: http://inspector:9070
+    ports:
+      - '127.0.0.1:8909:8909'
+      - '${HARBOR_BIND_IP:-127.0.0.1}:8910:8910'
+      - '${HARBOR_BIND_IP:-127.0.0.1}:9300-9399:9300-9399'
+    volumes:
+      - ./private:/certs:ro
+      - ./public:/app/public:ro
+      - ./data:/data
+      - ./config:/config:ro
+    networks: [inspection, gateway]
+    extra_hosts: ['host.docker.internal:host-gateway']
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8909/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+networks:
+  inspection:
+    internal: true
+  gateway: {}
